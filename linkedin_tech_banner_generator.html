@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkedIn Tech Banner Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #090d16;
+      color: #e2e8f0;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white">LinkedIn Tech Banner Studio</h1>
+          <p class="text-xs text-slate-400">Official 1584 × 396 px • High-Res PNG Export</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="randomizeBtn" class="px-3.5 py-2 rounded-lg text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Randomize
+        </button>
+        <button id="downloadBtn" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 transition flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download PNG
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col gap-6">
+
+    <!-- Live Banner Preview Card -->
+    <section class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Live Preview (1584 × 396)</h2>
+        </div>
+        <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-slate-400 hover:text-slate-200 transition">
+          <input type="checkbox" id="safeZoneToggle" checked class="rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500/40" />
+          <span>Show Profile Photo Safe Zone</span>
+        </label>
+      </div>
+
+      <!-- Canvas Container -->
+      <div class="relative w-full overflow-hidden rounded-xl border border-slate-700/80 shadow-2xl bg-slate-950" style="aspect-ratio: 4 / 1;">
+        <canvas id="bannerCanvas" width="1584" height="396" class="w-full h-full block"></canvas>
+      </div>
+
+      <p class="mt-3 text-xs text-slate-400 flex items-center gap-1.5">
+        <svg class="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Tip: Right-aligned text keeps your headline clear of your LinkedIn profile photo on both desktop and mobile. The safe-zone guide is automatically hidden when you download.</span>
+      </p>
+    </section>
+
+    <!-- Controls Grid -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Content Inputs -->
+      <div class="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-5">
+        <h3 class="text-sm font-semibold text-white uppercase tracking-wider border-b border-slate-800 pb-3">Banner Content</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label for="statusInput" class="block text-xs font-medium text-slate-300 mb-1.5">Top Status Badge (optional)</label>
+            <input type="text" id="statusInput" value="OPEN TO TECH COLLABORATIONS"
+              class="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-sm font-mono-code focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
+              placeholder="e.g., OPEN TO OPPORTUNITIES or FULL-STACK DEV" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="headlineInput" class="block text-xs font-medium text-slate-300 mb-1.5">Main Headline / Name</label>
+            <input type="text" id="headlineInput" value="KRISHNA KANT"
+              class="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
+              placeholder="e.g., Alex Rivera or Full-Stack Engineer" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="subheadlineInput" class="block text-xs font-medium text-slate-300 mb-1.5">Role / Tagline</label>
+            <input type="text" id="subheadlineInput" value="Software Engineer  •  Open Source  •  Tech Enthusiast"
+              class="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
+              placeholder="e.g., Senior Developer • Distributed Systems" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="tagsInput" class="block text-xs font-medium text-slate-300 mb-1.5">Tech Stack Badges (comma-separated)</label>
+            <input type="text" id="tagsInput" value="JavaScript, React, Node.js, Python, AWS, Docker"
+              class="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-sm font-mono-code focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
+              placeholder="React, Python, Kubernetes, Go" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="footerInput" class="block text-xs font-medium text-slate-300 mb-1.5">Portfolio / GitHub / Handle (optional)</label>
+            <input type="text" id="footerInput" value="github.com/KK02623"
+              class="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-sm font-mono-code focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
+              placeholder="github.com/username" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Visual Style & Theme -->
+      <div class="lg:col-span-5 bg-slate-900/70 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-5">
+        <h3 class="text-sm font-semibold text-white uppercase tracking-wider border-b border-slate-800 pb-3">Tech Theme & Layout</h3>
+
+        <!-- Theme Selector -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-2">Theme Preset</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="themeButtons">
+            <button data-theme="ide" class="theme-btn px-3 py-2 rounded-lg text-xs font-medium border text-left transition">
+              <span class="block font-semibold">Dark IDE</span>
+              <span class="text-[10px] opacity-70">Code & Terminal</span>
+            </button>
+            <button data-theme="cyber" class="theme-btn px-3 py-2 rounded-lg text-xs font-medium border text-left transition">
+              <span class="block font-semibold">Cyber Grid</span>
+              <span class="text-[10px] opacity-70">Neon & Matrix</span>
+            </button>
+            <button data-theme="circuit" class="theme-btn px-3 py-2 rounded-lg text-xs font-medium border text-left transition">
+              <span class="block font-semibold">Circuit PCB</span>
+              <span class="text-[10px] opacity-70">Hardware Nodes</span>
+            </button>
+            <button data-theme="saas" class="theme-btn px-3 py-2 rounded-lg text-xs font-medium border text-left transition">
+              <span class="block font-semibold">Modern SaaS</span>
+              <span class="text-[10px] opacity-70">Mesh & Dots</span>
+            </button>
+            <button data-theme="ai" class="theme-btn px-3 py-2 rounded-lg text-xs font-medium border text-left transition">
+              <span class="block font-semibold">Neural Net</span>
+              <span class="text-[10px] opacity-70">AI & Data Graph</span>
+            </button>
+            <button data-theme="light" class="theme-btn px-3 py-2 rounded-lg text-xs font-medium border text-left transition">
+              <span class="block font-semibold">Clean Light</span>
+              <span class="text-[10px] opacity-70">Minimal Tech</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Accent Color Selector -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-2">Accent Color</label>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button data-color="#06b6d4" class="swatch w-7 h-7 rounded-full bg-cyan-500 ring-offset-2 ring-offset-slate-900 transition" title="Cyan"></button>
+            <button data-color="#10b981" class="swatch w-7 h-7 rounded-full bg-emerald-500 ring-offset-2 ring-offset-slate-900 transition" title="Emerald"></button>
+            <button data-color="#6366f1" class="swatch w-7 h-7 rounded-full bg-indigo-500 ring-offset-2 ring-offset-slate-900 transition" title="Indigo"></button>
+            <button data-color="#a855f7" class="swatch w-7 h-7 rounded-full bg-purple-500 ring-offset-2 ring-offset-slate-900 transition" title="Purple"></button>
+            <button data-color="#f59e0b" class="swatch w-7 h-7 rounded-full bg-amber-500 ring-2 ring-offset-2 ring-offset-slate-900 ring-white transition" title="Amber"></button>
+            <button data-color="#f43f5e" class="swatch w-7 h-7 rounded-full bg-rose-500 ring-offset-2 ring-offset-slate-900 transition" title="Rose"></button>
+            <label class="ml-1 flex items-center gap-1.5 text-xs text-slate-400 cursor-pointer">
+              <input type="color" id="customColorPicker" value="#f59e0b" class="w-7 h-7 rounded cursor-pointer bg-transparent border-0 p-0" />
+              <span>Custom</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Text Alignment & Visual Enhancements -->
+        <div class="space-y-3 pt-1">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-2">Text Alignment</label>
+            <div class="flex rounded-lg bg-slate-950 p-1 border border-slate-800" id="alignButtons">
+              <button data-align="right" class="align-btn flex-1 py-1.5 text-xs font-medium rounded-md transition">Right</button>
+              <button data-align="center" class="align-btn flex-1 py-1.5 text-xs font-medium rounded-md transition">Center</button>
+              <button data-align="left" class="align-btn flex-1 py-1.5 text-xs font-medium rounded-md transition">Left</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-slate-300 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5">
+              <input type="checkbox" id="gradientTitleToggle" checked class="rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500/40" />
+              <span>Gradient Headline</span>
+            </label>
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-slate-300 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5">
+              <input type="checkbox" id="sideAccentsToggle" checked class="rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500/40" />
+              <span>Side Tech Accents</span>
+            </label>
+            <label class="sm:col-span-2 inline-flex items-center gap-2 cursor-pointer select-none text-xs text-slate-300 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5">
+              <input type="checkbox" id="codeCardToggle" checked class="rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500/40" />
+              <span>Decorative Terminal (Left/Right Align)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('bannerCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = 1584;
+    const H = 396;
+
+    // App State
+    const state = {
+      status: document.getElementById('statusInput').value,
+      headline: document.getElementById('headlineInput').value,
+      subheadline: document.getElementById('subheadlineInput').value,
+      tags: document.getElementById('tagsInput').value,
+      footer: document.getElementById('footerInput').value,
+      theme: 'ide',
+      accent: '#f59e0b',
+      align: 'center',
+      showSafeZone: true,
+      showCodeCard: true,
+      gradientTitle: true,
+      showSideAccents: true,
+    };
+
+    // Helper: Hex to RGBA
+    function hexToRgba(hex, alpha) {
+      const clean = hex.replace('#', '');
+      const r = parseInt(clean.substring(0, 2), 16);
+      const g = parseInt(clean.substring(2, 4), 16);
+      const b = parseInt(clean.substring(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    // Helper: Rounded Rectangle
+    function roundRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    // Deterministic pseudo-random for consistent visuals while typing
+    function seededRandom(seed) {
+      let x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    // Draw Backgrounds per Theme
+    function drawBackground() {
+      const isLight = state.theme === 'light';
+
+      if (state.theme === 'ide') {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#070b14');
+        grad.addColorStop(0.5, '#0d1424');
+        grad.addColorStop(1, '#0b101b');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Dual balanced ambient glows
+        const glowRight = ctx.createRadialGradient(W * 0.84, H * 0.25, 20, W * 0.84, H * 0.25, 520);
+        glowRight.addColorStop(0, hexToRgba(state.accent, 0.24));
+        glowRight.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glowRight;
+        ctx.fillRect(0, 0, W, H);
+
+        const glowLeft = ctx.createRadialGradient(W * 0.14, H * 0.78, 20, W * 0.14, H * 0.78, 440);
+        glowLeft.addColorStop(0, hexToRgba(state.accent, 0.14));
+        glowLeft.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glowLeft;
+        ctx.fillRect(0, 0, W, H);
+
+        // Subtle dot grid
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.13)';
+        for (let x = 24; x < W; x += 34) {
+          for (let y = 24; y < H; y += 34) {
+            ctx.beginPath();
+            ctx.arc(x, y, 1.25, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else if (state.theme === 'cyber') {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#050814');
+        grad.addColorStop(1, '#0c1026');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Perspective Grid
+        ctx.strokeStyle = hexToRgba(state.accent, 0.18);
+        ctx.lineWidth = 1.2;
+        const horizonY = H * 0.52;
+        for (let i = -14; i <= 14; i++) {
+          ctx.beginPath();
+          ctx.moveTo(W * 0.5 + i * 70, horizonY);
+          ctx.lineTo(W * 0.5 + i * 240, H);
+          ctx.stroke();
+        }
+        for (let y = horizonY; y < H; y += 26) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+        }
+
+        // Neon Horizon Glow
+        const glow = ctx.createRadialGradient(W * 0.5, horizonY, 10, W * 0.5, horizonY, 680);
+        glow.addColorStop(0, hexToRgba(state.accent, 0.35));
+        glow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+
+        // Top subtle scanlines
+        ctx.fillStyle = 'rgba(255,255,255,0.02)';
+        for (let y = 0; y < H; y += 6) {
+          ctx.fillRect(0, y, W, 1);
+        }
+      } else if (state.theme === 'circuit') {
+        ctx.fillStyle = '#0a0f14';
+        ctx.fillRect(0, 0, W, H);
+
+        // Ambient glow
+        const glow = ctx.createRadialGradient(W * 0.25, H * 0.5, 20, W * 0.25, H * 0.5, 580);
+        glow.addColorStop(0, hexToRgba(state.accent, 0.2));
+        glow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+
+        // PCB Circuit Traces
+        ctx.strokeStyle = hexToRgba(state.accent, 0.28);
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 24; i++) {
+          const startX = Math.floor(seededRandom(i * 11 + 1) * 40) * 40;
+          const startY = Math.floor(seededRandom(i * 17 + 2) * 10) * 40;
+          const len1 = (Math.floor(seededRandom(i * 23 + 3) * 5) + 2) * 40;
+          const diag = (seededRandom(i * 29 + 4) > 0.5 ? 1 : -1) * 40;
+          const len2 = (Math.floor(seededRandom(i * 31 + 5) * 4) + 2) * 40;
+
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(startX + len1, startY);
+          ctx.lineTo(startX + len1 + 40, startY + diag);
+          ctx.lineTo(startX + len1 + 40 + len2, startY + diag);
+          ctx.stroke();
+
+          // Nodes
+          ctx.fillStyle = '#0a0f14';
+          ctx.beginPath();
+          ctx.arc(startX, startY, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = hexToRgba(state.accent, 0.85);
+          ctx.beginPath();
+          ctx.arc(startX + len1 + 40 + len2, startY + diag, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (state.theme === 'saas') {
+        ctx.fillStyle = '#09090b';
+        ctx.fillRect(0, 0, W, H);
+
+        // Dual mesh glows
+        const glow1 = ctx.createRadialGradient(W * 0.15, H * 0.1, 10, W * 0.15, H * 0.1, 560);
+        glow1.addColorStop(0, hexToRgba(state.accent, 0.32));
+        glow1.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glow1;
+        ctx.fillRect(0, 0, W, H);
+
+        const glow2 = ctx.createRadialGradient(W * 0.85, H * 0.9, 10, W * 0.85, H * 0.9, 520);
+        glow2.addColorStop(0, 'rgba(99, 102, 241, 0.25)');
+        glow2.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glow2;
+        ctx.fillRect(0, 0, W, H);
+
+        // Soft dot matrix
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        for (let x = 20; x < W; x += 28) {
+          for (let y = 20; y < H; y += 28) {
+            ctx.beginPath();
+            ctx.arc(x, y, 1.1, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else if (state.theme === 'ai') {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#060913');
+        grad.addColorStop(1, '#111827');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Neural network nodes & connections
+        const nodes = [];
+        for (let i = 0; i < 42; i++) {
+          nodes.push({
+            x: seededRandom(i * 13 + 7) * W,
+            y: seededRandom(i * 19 + 11) * H,
+            r: 2.5 + seededRandom(i * 23 + 3) * 3.5
+          });
+        }
+
+        ctx.lineWidth = 1;
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx = nodes[i].x - nodes[j].x;
+            const dy = nodes[i].y - nodes[j].y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 220) {
+              ctx.strokeStyle = hexToRgba(state.accent, (1 - dist / 220) * 0.35);
+              ctx.beginPath();
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        nodes.forEach(n => {
+          ctx.fillStyle = hexToRgba(state.accent, 0.75);
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      } else if (isLight) {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#f8fafc');
+        grad.addColorStop(1, '#e2e8f0');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Soft accent wash
+        const glow = ctx.createRadialGradient(W * 0.85, H * 0.2, 10, W * 0.85, H * 0.2, 540);
+        glow.addColorStop(0, hexToRgba(state.accent, 0.16));
+        glow.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+
+        // Crisp architectural grid
+        ctx.strokeStyle = 'rgba(15, 23, 42, 0.05)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 44) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, H);
+          ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 44) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+        }
+      }
+
+      // Top thin accent bar with subtle glow
+      const barGrad = ctx.createLinearGradient(0, 0, W, 0);
+      barGrad.addColorStop(0, hexToRgba(state.accent, 0.35));
+      barGrad.addColorStop(0.5, state.accent);
+      barGrad.addColorStop(1, hexToRgba(state.accent, 0.35));
+      ctx.fillStyle = barGrad;
+      ctx.fillRect(0, 0, W, 5);
+    }
+
+    // Draw Side Tech Accents (fills empty sides in Center mode & adds subtle HUD frame)
+    function drawSideAccents() {
+      if (!state.showSideAccents) return;
+      const isLight = state.theme === 'light';
+
+      ctx.save();
+
+      // Subtle corner HUD brackets
+      const m = 28;
+      const len = 26;
+      ctx.strokeStyle = hexToRgba(state.accent, isLight ? 0.35 : 0.45);
+      ctx.lineWidth = 2;
+
+      // Top-left bracket
+      ctx.beginPath();
+      ctx.moveTo(m, m + len); ctx.lineTo(m, m); ctx.lineTo(m + len, m);
+      // Top-right bracket
+      ctx.moveTo(W - m - len, m); ctx.lineTo(W - m, m); ctx.lineTo(W - m, m + len);
+      // Bottom-right bracket
+      ctx.moveTo(W - m, H - m - len); ctx.lineTo(W - m, H - m); ctx.lineTo(W - m - len, H - m);
+      ctx.stroke();
+
+      // Extra rich side elements when Center-aligned (so sides don't look empty)
+      if (state.align === 'center') {
+        // Right side: GitHub-style Contribution Heatmap + label
+        const cols = 10;
+        const rows = 5;
+        const cell = 15;
+        const gap = 5;
+        const gridW = cols * (cell + gap);
+        const gx = W - gridW - 72;
+        const gy = 132;
+
+        ctx.font = '500 12px "JetBrains Mono", monospace';
+        ctx.fillStyle = isLight ? 'rgba(15, 23, 42, 0.45)' : 'rgba(148, 163, 184, 0.55)';
+        ctx.textAlign = 'left';
+        ctx.fillText('CONTRIBUTION ACTIVITY', gx, gy - 14);
+
+        for (let c = 0; c < cols; c++) {
+          for (let r = 0; r < rows; r++) {
+            const val = seededRandom((c * 7 + r * 13) + 42);
+            const alpha = val > 0.78 ? 0.78 : val > 0.52 ? 0.42 : val > 0.28 ? 0.2 : 0.08;
+            roundRect(ctx, gx + c * (cell + gap), gy + r * (cell + gap), cell, cell, 3.5);
+            ctx.fillStyle = hexToRgba(state.accent, alpha);
+            ctx.fill();
+          }
+        }
+
+        // Subtle branch tag below heatmap
+        ctx.font = '500 12px "JetBrains Mono", monospace';
+        ctx.fillStyle = isLight ? 'rgba(15, 23, 42, 0.4)' : 'rgba(148, 163, 184, 0.45)';
+        ctx.fillText('git branch: main  •  build: passing', gx, gy + rows * (cell + gap) + 20);
+
+        // Top-Left (safely above profile photo overlap zone): Minimal Code Snippet Chip
+        const lx = 72;
+        const ly = 68;
+        const lw = 250;
+        const lh = 96;
+
+        roundRect(ctx, lx, ly, lw, lh, 12);
+        ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.6)' : 'rgba(15, 23, 42, 0.55)';
+        ctx.fill();
+        ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.1)' : 'rgba(148, 163, 184, 0.16)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Mini window dots
+        ['#ef4444', '#f59e0b', '#10b981'].forEach((col, i) => {
+          ctx.fillStyle = hexToRgba(col, 0.8);
+          ctx.beginPath();
+          ctx.arc(lx + 18 + i * 14, ly + 18, 3.8, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.font = '500 12.5px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = hexToRgba(state.accent, 0.9);
+        ctx.fillText('$ whoami', lx + 16, ly + 46);
+        ctx.fillStyle = isLight ? '#334155' : '#cbd5e1';
+        ctx.fillText('> engineer & builder', lx + 16, ly + 68);
+        ctx.fillStyle = isLight ? '#64748b' : '#64748b';
+        ctx.fillText('> status: shipping_', lx + 16, ly + 86);
+      }
+
+      ctx.restore();
+    }
+
+    // Draw Decorative Code Terminal Card (when enabled and not centered)
+    function drawCodeCard() {
+      if (!state.showCodeCard || state.align === 'center') return;
+
+      const isLight = state.theme === 'light';
+      const cardW = 390;
+      const cardH = 210;
+      const cardY = 64;
+      const cardX = state.align === 'right' ? 110 : W - cardW - 90;
+
+      // Shadow
+      ctx.save();
+      ctx.shadowColor = isLight ? 'rgba(15, 23, 42, 0.12)' : 'rgba(0, 0, 0, 0.45)';
+      ctx.shadowBlur = 28;
+      ctx.shadowOffsetY = 12;
+
+      roundRect(ctx, cardX, cardY, cardW, cardH, 14);
+      ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.88)' : 'rgba(15, 23, 42, 0.78)';
+      ctx.fill();
+      ctx.restore();
+
+      // Border
+      roundRect(ctx, cardX, cardY, cardW, cardH, 14);
+      ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.12)' : 'rgba(148, 163, 184, 0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Window controls
+      const dotY = cardY + 22;
+      const dots = ['#ef4444', '#f59e0b', '#10b981'];
+      dots.forEach((col, idx) => {
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.arc(cardX + 24 + idx * 18, dotY, 5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Filename
+      ctx.font = '500 13px "JetBrains Mono", monospace';
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.textAlign = 'left';
+      ctx.fillText('profile.config.ts', cardX + 90, dotY + 4);
+
+      // Divider
+      ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(148, 163, 184, 0.12)';
+      ctx.beginPath();
+      ctx.moveTo(cardX, cardY + 40);
+      ctx.lineTo(cardX + cardW, cardY + 40);
+      ctx.stroke();
+
+      // Code lines
+      const lines = [
+        { k: 'const ', v: 'engineer = {', c1: '#c084fc', c2: isLight ? '#0f172a' : '#f8fafc' },
+        { k: '  focus: ', v: '"High-Impact Tech",', c1: state.accent, c2: isLight ? '#059669' : '#34d399' },
+        { k: '  mindset: ', v: '"Ship & Scale",', c1: state.accent, c2: isLight ? '#059669' : '#34d399' },
+        { k: '  coffee: ', v: 'Infinity,', c1: state.accent, c2: '#f59e0b' },
+        { k: '  status: ', v: '"Open to Connect"', c1: state.accent, c2: isLight ? '#059669' : '#34d399' },
+        { k: '};', v: '', c1: isLight ? '#0f172a' : '#f8fafc', c2: '' }
+      ];
+
+      ctx.font = '500 14.5px "JetBrains Mono", monospace';
+      lines.forEach((line, i) => {
+        const y = cardY + 68 + i * 24;
+        ctx.fillStyle = isLight ? '#94a3b8' : '#475569';
+        ctx.fillText(String(i + 1), cardX + 18, y);
+
+        ctx.fillStyle = line.c1;
+        ctx.fillText(line.k, cardX + 44, y);
+        const kw = ctx.measureText(line.k).width;
+
+        if (line.v) {
+          ctx.fillStyle = line.c2;
+          ctx.fillText(line.v, cardX + 44 + kw, y);
+        }
+      });
+    }
+
+    // Draw Main Text & Tech Badges
+    function drawContent() {
+      const isLight = state.theme === 'light';
+      const primaryText = isLight ? '#0f172a' : '#f8fafc';
+      const secondaryText = isLight ? '#475569' : '#cbd5e1';
+      const mutedText = isLight ? '#475569' : '#cbd5e1';
+
+      const padX = 96;
+      let anchorX = W - padX;
+      if (state.align === 'center') anchorX = W / 2;
+      if (state.align === 'left') anchorX = padX;
+
+      const statusText = state.status.trim();
+      const hasStatus = statusText.length > 0;
+
+      // 1. Optional Top Status Pill
+      if (hasStatus) {
+        ctx.save();
+        ctx.font = '600 13px "JetBrains Mono", monospace';
+        const textW = ctx.measureText(statusText).width;
+        const pillW = textW + 46;
+        const pillH = 30;
+        const pillY = 48;
+
+        let pillX = anchorX - pillW;
+        if (state.align === 'center') pillX = anchorX - pillW / 2;
+        if (state.align === 'left') pillX = anchorX;
+
+        roundRect(ctx, pillX, pillY, pillW, pillH, 15);
+        ctx.fillStyle = isLight ? hexToRgba(state.accent, 0.1) : hexToRgba(state.accent, 0.12);
+        ctx.fill();
+        ctx.strokeStyle = hexToRgba(state.accent, 0.4);
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Glowing live status dot
+        ctx.fillStyle = state.accent;
+        ctx.shadowColor = state.accent;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(pillX + 16, pillY + pillH / 2, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = isLight ? '#0f172a' : '#f1f5f9';
+        ctx.textAlign = 'left';
+        ctx.fillText(statusText, pillX + 29, pillY + 19.5);
+        ctx.restore();
+      }
+
+      // 2. Headline (with optional gradient & soft glow)
+      ctx.save();
+      ctx.textAlign = state.align;
+      ctx.font = '800 58px "Inter", sans-serif';
+      const headline = state.headline.trim() || 'Your Tech Headline';
+      const headlineY = hasStatus ? 142 : 134;
+
+      if (state.gradientTitle && !isLight) {
+        const hw = ctx.measureText(headline).width;
+        let gx1 = anchorX - hw;
+        if (state.align === 'center') gx1 = anchorX - hw / 2;
+        if (state.align === 'left') gx1 = anchorX;
+
+        const textGrad = ctx.createLinearGradient(gx1, headlineY - 46, gx1 + hw, headlineY + 6);
+        textGrad.addColorStop(0, '#ffffff');
+        textGrad.addColorStop(0.65, '#f8fafc');
+        textGrad.addColorStop(1, hexToRgba(state.accent, 0.85));
+        ctx.fillStyle = textGrad;
+        ctx.shadowColor = hexToRgba(state.accent, 0.22);
+        ctx.shadowBlur = 18;
+      } else {
+        ctx.fillStyle = primaryText;
+      }
+      ctx.fillText(headline, anchorX, headlineY);
+      ctx.restore();
+
+      // 3. Subheadline (colors '•' bullets with accent color)
+      const sub = state.subheadline.trim();
+      const subY = hasStatus ? 186 : 182;
+      if (sub) {
+        ctx.save();
+        ctx.font = '500 23px "Inter", sans-serif';
+        const parts = sub.split('•');
+        if (parts.length > 1) {
+          const bulletStr = ' • ';
+          const widths = parts.map(p => ctx.measureText(p.trim()).width);
+          const bulletW = ctx.measureText(bulletStr).width;
+          const totalSubW = widths.reduce((a, b) => a + b, 0) + bulletW * (parts.length - 1);
+
+          let curX = anchorX - totalSubW;
+          if (state.align === 'center') curX = anchorX - totalSubW / 2;
+          if (state.align === 'left') curX = anchorX;
+
+          ctx.textAlign = 'left';
+          parts.forEach((part, idx) => {
+            const clean = part.trim();
+            ctx.fillStyle = secondaryText;
+            ctx.fillText(clean, curX, subY);
+            curX += widths[idx];
+
+            if (idx < parts.length - 1) {
+              ctx.fillStyle = state.accent;
+              ctx.fillText(bulletStr, curX, subY);
+              curX += bulletW;
+            }
+          });
+        } else {
+          ctx.textAlign = state.align;
+          ctx.fillStyle = secondaryText;
+          ctx.fillText(sub, anchorX, subY);
+        }
+        ctx.restore();
+      }
+
+      // 4. Tech Stack Pills (glassmorphic with accent dot)
+      const rawTags = state.tags
+        .split(',')
+        .map(t => t.trim())
+        .filter(Boolean)
+        .slice(0, 8);
+
+      if (rawTags.length > 0) {
+        ctx.save();
+        ctx.font = '600 16.5px "JetBrains Mono", monospace';
+        const pillH = 38;
+        const pillPadLeft = 28;
+        const pillPadRight = 16;
+        const gap = 12;
+        const pillY = hasStatus ? 218 : 220;
+
+        const widths = rawTags.map(tag => ctx.measureText(tag).width + pillPadLeft + pillPadRight);
+        const totalW = widths.reduce((a, b) => a + b, 0) + gap * (rawTags.length - 1);
+
+        let startX = anchorX - totalW;
+        if (state.align === 'center') startX = anchorX - totalW / 2;
+        if (state.align === 'left') startX = anchorX;
+
+        let curX = startX;
+        rawTags.forEach((tag, idx) => {
+          const pw = widths[idx];
+
+          // Subtle gradient fill
+          roundRect(ctx, curX, pillY, pw, pillH, 10);
+          const pGrad = ctx.createLinearGradient(curX, pillY, curX, pillY + pillH);
+          if (isLight) {
+            pGrad.addColorStop(0, hexToRgba(state.accent, 0.16));
+            pGrad.addColorStop(1, hexToRgba(state.accent, 0.08));
+          } else {
+            pGrad.addColorStop(0, hexToRgba(state.accent, 0.2));
+            pGrad.addColorStop(1, hexToRgba(state.accent, 0.07));
+          }
+          ctx.fillStyle = pGrad;
+          ctx.fill();
+
+          ctx.strokeStyle = hexToRgba(state.accent, isLight ? 0.42 : 0.55);
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+
+          // Small tech indicator dot
+          ctx.fillStyle = state.accent;
+          ctx.beginPath();
+          ctx.arc(curX + 14, pillY + pillH / 2, 3.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Tag text
+          ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+          ctx.textAlign = 'left';
+          ctx.fillText(tag, curX + pillPadLeft - 2, pillY + 24);
+
+          curX += pw + gap;
+        });
+        ctx.restore();
+      }
+
+      // 5. Footer / GitHub Pill
+      const footer = state.footer.trim();
+      if (footer) {
+        ctx.save();
+        ctx.font = '500 16px "JetBrains Mono", monospace';
+        const isGithub = footer.toLowerCase().includes('github');
+        const iconSpace = 24;
+        const textW = ctx.measureText(footer).width;
+        const fpW = textW + iconSpace + 32;
+        const fpH = 34;
+        const fpY = hasStatus ? 284 : 292;
+
+        let fpX = anchorX - fpW;
+        if (state.align === 'center') fpX = anchorX - fpW / 2;
+        if (state.align === 'left') fpX = anchorX;
+
+        roundRect(ctx, fpX, fpY, fpW, fpH, 17);
+        ctx.fillStyle = isLight ? 'rgba(15, 23, 42, 0.06)' : 'rgba(255, 255, 255, 0.05)';
+        ctx.fill();
+        ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.14)' : 'rgba(148, 163, 184, 0.22)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Small icon (code/link symbol)
+        ctx.fillStyle = state.accent;
+        ctx.font = '700 14px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(isGithub ? '⌥' : '↗', fpX + 14, fpY + 22);
+
+        // Link text
+        ctx.font = '500 15.5px "JetBrains Mono", monospace';
+        ctx.fillStyle = mutedText;
+        ctx.fillText(footer, fpX + 34, fpY + 22);
+        ctx.restore();
+      }
+    }
+
+    // Draw LinkedIn Profile Picture Safe Zone Overlay (Preview only)
+    function drawSafeZoneOverlay() {
+      if (!state.showSafeZone) return;
+
+      ctx.save();
+      // Approximate LinkedIn desktop profile photo overlap area on bottom-left
+      const cx = 196;
+      const cy = H - 24;
+      const r = 148;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.16)';
+      ctx.fill();
+
+      ctx.setLineDash([8, 6]);
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = 'rgba(248, 113, 113, 0.85)';
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.font = '600 15px "Inter", sans-serif';
+      ctx.fillStyle = 'rgba(254, 202, 202, 0.95)';
+      ctx.textAlign = 'center';
+      ctx.fillText('Profile Photo', cx, H - 72);
+      ctx.font = '500 13px "Inter", sans-serif';
+      ctx.fillText('Overlap Zone', cx, H - 52);
+      ctx.restore();
+    }
+
+    // Main Render
+    function render(forExport = false) {
+      ctx.clearRect(0, 0, W, H);
+      drawBackground();
+      drawSideAccents();
+      drawCodeCard();
+      drawContent();
+      if (!forExport) {
+        drawSafeZoneOverlay();
+      }
+    }
+
+    // UI Sync Helpers
+    function updateActiveButtons() {
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        const active = btn.dataset.theme === state.theme;
+        btn.className = `theme-btn px-3 py-2 rounded-lg text-xs font-medium border text-left transition ${
+          active
+            ? 'bg-cyan-500/15 border-cyan-500 text-white'
+            : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-200'
+        }`;
+      });
+
+      document.querySelectorAll('.align-btn').forEach(btn => {
+        const active = btn.dataset.align === state.align;
+        btn.className = `align-btn flex-1 py-1.5 text-xs font-medium rounded-md transition ${
+          active ? 'bg-slate-800 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+        }`;
+      });
+
+      document.querySelectorAll('.swatch').forEach(sw => {
+        const active = sw.dataset.color.toLowerCase() === state.accent.toLowerCase();
+        sw.classList.toggle('ring-2', active);
+        sw.classList.toggle('ring-white', active);
+      });
+    }
+
+    // Event Listeners
+    document.getElementById('statusInput').addEventListener('input', e => {
+      state.status = e.target.value;
+      render();
+    });
+    document.getElementById('headlineInput').addEventListener('input', e => {
+      state.headline = e.target.value;
+      render();
+    });
+    document.getElementById('subheadlineInput').addEventListener('input', e => {
+      state.subheadline = e.target.value;
+      render();
+    });
+    document.getElementById('tagsInput').addEventListener('input', e => {
+      state.tags = e.target.value;
+      render();
+    });
+    document.getElementById('footerInput').addEventListener('input', e => {
+      state.footer = e.target.value;
+      render();
+    });
+    document.getElementById('safeZoneToggle').addEventListener('change', e => {
+      state.showSafeZone = e.target.checked;
+      render();
+    });
+    document.getElementById('gradientTitleToggle').addEventListener('change', e => {
+      state.gradientTitle = e.target.checked;
+      render();
+    });
+    document.getElementById('sideAccentsToggle').addEventListener('change', e => {
+      state.showSideAccents = e.target.checked;
+      render();
+    });
+    document.getElementById('codeCardToggle').addEventListener('change', e => {
+      state.showCodeCard = e.target.checked;
+      render();
+    });
+
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.theme = btn.dataset.theme;
+        updateActiveButtons();
+        render();
+      });
+    });
+
+    document.querySelectorAll('.align-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.align = btn.dataset.align;
+        updateActiveButtons();
+        render();
+      });
+    });
+
+    document.querySelectorAll('.swatch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        state.accent = sw.dataset.color;
+        document.getElementById('customColorPicker').value = state.accent;
+        updateActiveButtons();
+        render();
+      });
+    });
+
+    document.getElementById('customColorPicker').addEventListener('input', e => {
+      state.accent = e.target.value;
+      updateActiveButtons();
+      render();
+    });
+
+    // Randomize Preset
+    document.getElementById('randomizeBtn').addEventListener('click', () => {
+      const themes = ['ide', 'cyber', 'circuit', 'saas', 'ai', 'light'];
+      const colors = ['#06b6d4', '#10b981', '#6366f1', '#a855f7', '#f59e0b', '#f43f5e'];
+      state.theme = themes[Math.floor(Math.random() * themes.length)];
+      state.accent = colors[Math.floor(Math.random() * colors.length)];
+      document.getElementById('customColorPicker').value = state.accent;
+      updateActiveButtons();
+      render();
+    });
+
+    // Download PNG
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      render(true); // Render without safe zone overlay
+      const link = document.createElement('a');
+      link.download = `linkedin-tech-banner-${state.theme}.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+      render(false); // Restore preview
+    });
+
+    // Initialize once fonts are loaded
+    updateActiveButtons();
+    render();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => render());
+    }
+  </script>
+</body>
+</html>
